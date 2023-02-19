@@ -1,4 +1,5 @@
 <?php
+
 namespace MultiRequest;
 
 
@@ -7,103 +8,109 @@ namespace MultiRequest;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  */
-class Session {
-	
-	/**
-	 * @var RequestsDefaults
-	 */
-	protected $requestsDefaults;
-	
-	/**
-	 * @var Callbacks
-	 */
-	protected $callbacks;
-	
-	protected $mrHandler;
-	protected $cookiesFilepath;
-	protected $lastRequest;
-	protected $enableAutoStart;
-	protected $enableAutoReferer;
-	protected $requestsDelay;
+class Session
+{
 
-	public function __construct(Handler $mrHandler, $cookiesBasedir, $enableAutoReferer = false, $requestsDelay = 0) {
-		$this->callbacks = new Callbacks();
-		$this->mrHandler = $mrHandler;
-		$this->enableAutoReferer = $enableAutoReferer;
-		$this->requestsDelay = $requestsDelay;
-		$this->requestsDefaults = new Defaults();
-		$this->cookiesFilepath = tempnam($cookiesBasedir, '_');
-	}
+    protected Defaults $requestsDefaults;
+    protected Callbacks $callbacks;
 
-	/**
-	 * @return Handler
-	 */
-	public function getMrHandler() {
-		return $this->mrHandler;
-	}
+    protected $mrHandler;
+    protected $cookiesFilepath;
+    protected $lastRequest;
+    protected $enableAutoStart;
+    protected $enableAutoReferer;
+    protected $requestsDelay;
 
-	public function buildRequest($url) {
-		$request = new Request($url);
-		$request->_session = $this;
-		return $request;
-	}
+    public function __construct(Handler $mrHandler, $cookiesBasedir, $enableAutoReferer = false, $requestsDelay = 0)
+    {
+        $this->callbacks = new Callbacks();
+        $this->mrHandler = $mrHandler;
+        $this->enableAutoReferer = $enableAutoReferer;
+        $this->requestsDelay = $requestsDelay;
+        $this->requestsDefaults = new Defaults();
+        $this->cookiesFilepath = tempnam($cookiesBasedir, '_');
+    }
 
-	/**
-	 * @return Request
-	 */
-	public function requestsDefaults() {
-		return $this->requestsDefaults;
-	}
+    /**
+     * @return Handler
+     */
+    public function getMrHandler()
+    {
+        return $this->mrHandler;
+    }
 
-	public function onRequestComplete($callback) {
-		$this->callbacks->add(__FUNCTION__, $callback);
-		return $this;
-	}
+    public function buildRequest($url)
+    {
+        $request = new Request($url);
+        $request->_session = $this;
+        return $request;
+    }
 
-	public function notifyRequestIsComplete(Request $request, Handler $mrHandler) {
-		$this->lastRequest = $request;
-		$this->callbacks->onRequestComplete($request, $this, $mrHandler);
-	}
+    /**
+     * @return Request
+     */
+    public function requestsDefaults()
+    {
+        return $this->requestsDefaults;
+    }
 
-	public function start() {
-		$this->enableAutoStart = true;
-		$this->mrHandler->start();
-	}
+    public function onRequestComplete($callback)
+    {
+        $this->callbacks->add(__FUNCTION__, $callback);
+        return $this;
+    }
 
-	public function stop() {
-		$this->enableAutoStart = false;
-	}
-	
- 	public function setRequestingDelay($milliseconds) {
-        	$this->requestingDelay = $milliseconds;
-    	}
-    	
-	public function request(Request $request) {
-		if($this->requestsDelay) {
-			usleep($this->requestsDelay);
-		}
-		$request->onComplete(array($this, 'notifyRequestIsComplete'));
-		
-		$this->requestsDefaults->applyToRequest($request);
-		$request->setCookiesStorage($this->cookiesFilepath);
-		if($this->enableAutoReferer && $this->lastRequest) {
-			$request->setCurlOption(CURLOPT_REFERER, $this->lastRequest->getUrl());
-		}
-		
-		$this->mrHandler->pushRequestToQueue($request);
-		if($this->enableAutoStart) {
-			$this->mrHandler->start();
-		}
-	}
+    public function notifyRequestIsComplete(Request $request, Handler $mrHandler)
+    {
+        $this->lastRequest = $request;
+        $this->callbacks->onRequestComplete($request, $this, $mrHandler);
+    }
 
-	public function clearCookie() {
-		if(file_exists($this->cookiesFilepath)) {
-			unlink($this->cookiesFilepath);
-		}
-	}
+    public function start()
+    {
+        $this->enableAutoStart = true;
+        $this->mrHandler->start();
+    }
 
-	public function __destruct() {
-		$this->clearCookie();
-	}
+    public function stop()
+    {
+        $this->enableAutoStart = false;
+    }
+
+    public function setRequestingDelay($milliseconds)
+    {
+        $this->requestingDelay = $milliseconds;
+    }
+
+    public function request(Request $request)
+    {
+        if ($this->requestsDelay) {
+            usleep($this->requestsDelay);
+        }
+        $request->onComplete(array($this, 'notifyRequestIsComplete'));
+
+        $this->requestsDefaults->applyToRequest($request);
+        $request->setCookiesStorage($this->cookiesFilepath);
+        if ($this->enableAutoReferer && $this->lastRequest) {
+            $request->setCurlOption(CURLOPT_REFERER, $this->lastRequest->getUrl());
+        }
+
+        $this->mrHandler->pushRequestToQueue($request);
+        if ($this->enableAutoStart) {
+            $this->mrHandler->start();
+        }
+    }
+
+    public function clearCookie()
+    {
+        if (file_exists($this->cookiesFilepath)) {
+            unlink($this->cookiesFilepath);
+        }
+    }
+
+    public function __destruct()
+    {
+        $this->clearCookie();
+    }
 }
 

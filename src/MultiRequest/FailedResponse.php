@@ -1,7 +1,9 @@
 <?php
+
 namespace MultiRequest;
 
-class FailedResponse extends Exception {
+class FailedResponse extends Exception
+{
 
 }
 

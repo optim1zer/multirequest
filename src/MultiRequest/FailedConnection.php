@@ -2,6 +2,7 @@
 
 namespace MultiRequest;
 
-class FailedConnection extends Exception {
+class FailedConnection extends Exception
+{
 
 }

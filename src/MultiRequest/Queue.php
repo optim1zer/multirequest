@@ -1,6 +1,6 @@
 <?php
-namespace MultiRequest;
 
+namespace MultiRequest;
 
 
 /**
@@ -8,23 +8,28 @@ namespace MultiRequest;
  * @author Barbushin Sergey http://linkedin.com/in/barbushin
  *
  */
-class Queue {
-	
-	protected $requests = array();
+class Queue
+{
 
-	public function push(Request $request) {
-		$this->requests[] = $request;
-	}
+    protected array $requests = [];
 
-	public function pop() {
-		return array_shift($this->requests);
-	}
+    public function push(Request $request)
+    {
+        $this->requests[] = $request;
+    }
 
-	public function count() {
-		return count($this->requests);
-	}
+    public function pop()
+    {
+        return array_shift($this->requests);
+    }
 
-	public function clear() {
-		$this->requests = array();
-	}
+    public function count()
+    {
+        return count($this->requests);
+    }
+
+    public function clear()
+    {
+        $this->requests = [];
+    }
 }

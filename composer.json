@@ -1,5 +1,5 @@
 {
-	"name": "multirequest/multirequest",
+	"name": "optim1zer/multirequest",
 	"description": "PHP library for easy and flexible multithread requests handling by CURL.",
 	"keywords": ["PHP", "curl", "multithread", "multirequest", "request"],
 	"homepage": "https://github.com/barbushin/multirequest",
@@ -13,10 +13,12 @@
 		}
 	],
 	"support": {
-		"issues": "https://github.com/barbushin/multirequest/issues?state=open"
+		"issues": "https://github.com/optim1zer/multirequest/issues?state=open"
 	},
 	"require": {
-		"php": ">=5.3.0"
+		"php": ">=8.0",
+		"ext-curl": "*",
+		"ext-mbstring": "*"
 	},
 	"autoload": {
 		"psr-0": {
