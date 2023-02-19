@@ -133,7 +133,7 @@ class Handler
                         $request = $this->queue->pop();
                         if ($request) {
                             $this->sendRequestToMultiCurl($curlHandle, $request);
-                            $this->activeRequests[$request->getId()] = $request;
+                            $this->activeRequests[] = $request;
                         } else {
                             break;
                         }
